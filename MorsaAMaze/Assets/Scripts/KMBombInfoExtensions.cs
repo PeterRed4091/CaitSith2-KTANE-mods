@@ -37,6 +37,7 @@ public static class KMBombInfoExtensions
     private class BatteryJSON
     {
         public int numbatteries = 0;
+        public int typebatteries = 0;
     }
 
     private class PortsJSON
@@ -56,15 +57,9 @@ public static class KMBombInfoExtensions
     public enum KnownBatteryType
     {
         Unknown = 0,
-        Empty = 0,
         D = 1,
-
-        //D batteries currently always come as 1 battery in the one battery holder
         AA = 2,
-        //AA batteries currently always comes in 2 batteries in the one battery holder
-        
-        AAx3 = 3,
-        AAx4 = 4
+        NineVolt = 3
     }
 
     public enum KnownPortType
@@ -280,8 +275,7 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryCount(this KMBombInfo bombInfo, int batteryType)
     {
-        return GetBatteryEntries(bombInfo).Where((x) => x.numbatteries == batteryType)
-            .Sum((x) => x.numbatteries);
+        return GetBatteryEntries(bombInfo).Where((x) => x.typebatteries == 0 ? ((batteryType == 2 && x.numbatteries >= 2 && x.numbatteries <= 4) || (batteryType == 1 && x.numbatteries == 1)) : x.typebatteries == batteryType).Sum((x) => x.numbatteries);
     }
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo)
@@ -296,7 +290,7 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo, int batteryType)
     {
-        return GetBatteryEntries(bombInfo).Count(x => x.numbatteries == batteryType);
+        return GetBatteryEntries(bombInfo).Count((x) => x.typebatteries == 0 ? ((batteryType == 2 && x.numbatteries >= 2 && x.numbatteries <= 4) || (batteryType == 1 && x.numbatteries == 1)) : x.typebatteries == batteryType);
     }
 
     public static int GetPortCount(this KMBombInfo bombInfo)
