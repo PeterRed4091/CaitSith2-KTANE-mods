@@ -495,7 +495,8 @@ public class MultipleWidgets : MonoBehaviour
             return JsonConvert.SerializeObject(new Dictionary<string, string>
             {
                 {"label",_indicatorLabel},
-                {"on",_indicatorLight.ToString()}
+                {"on",_indicatorLight.ToString()},
+                {"display",IndicatorText.text}
             });
         }
 
@@ -505,7 +506,8 @@ public class MultipleWidgets : MonoBehaviour
             return JsonConvert.SerializeObject(new Dictionary<string, string>
             {
                 {"label",_indicatorLabel},
-                {"color",IndicatorLights[_indicatorLightColor].name}
+                {"color",IndicatorLights[_indicatorLightColor].name},
+                {"display",IndicatorText.text}
             });
         }
         return "";
