@@ -910,7 +910,7 @@ public class MorseAMaze : MonoBehaviour
         {
             foreach (var twofactor in BombInfo.GetTwoFactorCodes())
             {
-                BombModule.LogFormat("Two Factor code: ",twofactor);
+                BombModule.LogFormat("Two Factor code: {0}",twofactor);
             }
 
             var sum = BombInfo.GetTwoFactorCodes().Select(twofactor => twofactor / 10).Select(code => code % 10).Sum();
