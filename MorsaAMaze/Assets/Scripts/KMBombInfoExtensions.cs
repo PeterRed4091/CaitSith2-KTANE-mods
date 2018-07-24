@@ -37,7 +37,12 @@ public static class KMBombInfoExtensions
     private class BatteryJSON
     {
         public int numbatteries = 0;
-        public int typebatteries = 0;
+    }
+
+    private class CustomBatteryJSON
+    {
+        public int numbatteries = 0;
+        public string type = "";
     }
 
     private class PortsJSON
@@ -130,6 +135,11 @@ public static class KMBombInfoExtensions
     private static IEnumerable<BatteryJSON> GetBatteryEntries(KMBombInfo bombInfo)
     {
         return GetJSONEntries<BatteryJSON>(bombInfo, KMBombInfo.QUERYKEY_GET_BATTERIES, null);
+    }
+
+    private static IEnumerable<CustomBatteryJSON> GetCustomBatteryEntries(KMBombInfo bombInfo)
+    {
+        return GetJSONEntries<CustomBatteryJSON>(bombInfo, "custombatteries", null);
     }
 
     private static IEnumerable<PortsJSON> GetPortEntries(KMBombInfo bombInfo)
@@ -275,7 +285,22 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryCount(this KMBombInfo bombInfo, int batteryType)
     {
-        return GetBatteryEntries(bombInfo).Where((x) => x.typebatteries == 0 ? ((batteryType == 2 && x.numbatteries >= 2 && x.numbatteries <= 4) || (batteryType == 1 && x.numbatteries == 1)) : x.typebatteries == batteryType).Sum((x) => x.numbatteries);
+        if (GetCustomBatteryEntries(bombInfo).Any())
+        {
+            var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
+            var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
+            foreach (var custombatteryset in custombatteries)
+            {
+                for (int i = 0; i < batteries.Length(); i++)
+                {
+                    if (batteries[i]["numbatteries"] != custombatteryset["numbatteries"]) continue;
+                    batteries.RemoveAt[i];
+                    break;
+                }
+            }
+            return (custombatteries.Where((x) => ((KnownBatteryType)batteryType).ToString() == x.type).Sum((x) => x.numbatteries) + batteries.Where((x) => batteryType == x.numbatteries).Sum((x) => x.numbatteries));
+        }
+        return GetBatteryEntries(bombInfo).Where((x) => (batteryType == 2 && x.numbatteries == 2) || (batteryType == 1 && x.numbatteries == 1)).Sum((x) => x.numbatteries);
     }
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo)
@@ -290,7 +315,22 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo, int batteryType)
     {
-        return GetBatteryEntries(bombInfo).Count((x) => x.typebatteries == 0 ? ((batteryType == 2 && x.numbatteries >= 2 && x.numbatteries <= 4) || (batteryType == 1 && x.numbatteries == 1)) : x.typebatteries == batteryType);
+        if (GetBatterySetEntries(bombInfo).Any())
+        {
+            var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
+            var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
+            foreach (var custombatteryset in custombatteries)
+            {
+                for (int i = 0; i < batteries.Length(); i++)
+                {
+                    if (batteries[i]["numbatteries"] != custombatteryset["numbatteries"]) continue;
+                    batteries.RemoveAt[i];
+                    break;
+                }
+            }
+            return (custombatteries.Count((x) => ((KnownBatteryType)batteryType).ToString() == x.type) + batteries.Count((x) => batteryType == x.numbatteries));
+        }
+        return GetBatteryEntries(bombInfo).Count((x) => (batteryType == 2 && x.numbatteries == 2) || (batteryType == 1 && x.numbatteries == 1));
     }
 
     public static int GetPortCount(this KMBombInfo bombInfo)

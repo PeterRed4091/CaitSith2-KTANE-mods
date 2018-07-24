@@ -124,6 +124,12 @@ public class MultipleWidgets : MonoBehaviour
     private bool _batteries = false;
     private BatteryType _batteryType = BatteryType.NineVolt;
     private BatteryType _holderType = BatteryType.NineVolt;
+    private class BatterySetInfo
+    {
+        public int numbatteries = 0;
+        public int capacity = 0;
+        public string type = "";
+    }
 
     private bool _twofactor = false;
     private int _key = -1;
@@ -676,7 +682,7 @@ public class MultipleWidgets : MonoBehaviour
             && (_batteryType == BatteryType.NineVolt || _batteryType == BatteryType.AAx2));
         var holder = (int)_batteryType - 1;
         if (holder < 0) holder = Random.Range(0, BatteryHolders.Length);
-        if (holder > 0) _holderType = BatteryType.AAx2;
+        _holderType = (BatteryType) (holder + 1);
         DebugLog("Putting {0} {1} into a holder that fits {2} {3}.",
             GetNumberOfBatteries(),
             _batteryType == BatteryType.NineVolt
@@ -702,19 +708,24 @@ public class MultipleWidgets : MonoBehaviour
         return (int) _batteryType;
     }
 
-    int GetTypeOfBatteries()
-    {
-        return (_holderType == BatteryType.AAx2 ? 2 : 3);
-    }
-
     public string GetBatteryQueryResponse(string queryKey, string queryInfo)
     {
         if (queryKey == KMBombInfo.QUERYKEY_GET_BATTERIES)
         {
             return JsonConvert.SerializeObject(new Dictionary<string, int>
             {
-                {"numbatteries",GetNumberOfBatteries()},
-                {"typebatteries",GetTypeOfBatteries()}
+                {"numbatteries",GetNumberOfBatteries()}
+            });
+        }
+
+        if (!_modSettings.EnableExtendedBatteries) return "";
+        if (queryKey == "custombatteries")
+        {
+            return JsonConvert.SerializeObject(new BatterySetInfo
+            {
+                numbatteries = GetNumberOfBatteries(),
+                capacity = (int)_holderType,
+                type = (_holderType == BatteryType.NineVolt ? "NineVolt" : "AA")
             });
         }
         return "";
