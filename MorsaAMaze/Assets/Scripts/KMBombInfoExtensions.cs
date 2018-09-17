@@ -287,14 +287,14 @@ public static class KMBombInfoExtensions
     {
         if (GetCustomBatteryEntries(bombInfo).Any())
         {
-            var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
-            var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
+            var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x.numbatteries).ToList();
+            var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x.numbatteries).ToList();
             foreach (var custombatteryset in custombatteries)
             {
-                for (int i = 0; i < batteries.Length(); i++)
+                for (int i = 0; i < batteries.Count(); i++)
                 {
-                    if (batteries[i]["numbatteries"] != custombatteryset["numbatteries"]) continue;
-                    batteries.RemoveAt[i];
+                    if (batteries[i].numbatteries != custombatteryset.numbatteries) continue;
+                    batteries.RemoveAt(i);
                     break;
                 }
             }
@@ -315,16 +315,16 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo, int batteryType)
     {
-        if (GetBatterySetEntries(bombInfo).Any())
+        if (GetCustomBatteryEntries(bombInfo).Any())
         {
-            var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
-            var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x["numbatteries"]).ToList();
+            var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x.numbatteries).ToList();
+            var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x.numbatteries).ToList();
             foreach (var custombatteryset in custombatteries)
             {
-                for (int i = 0; i < batteries.Length(); i++)
+                for (int i = 0; i < batteries.Count(); i++)
                 {
-                    if (batteries[i]["numbatteries"] != custombatteryset["numbatteries"]) continue;
-                    batteries.RemoveAt[i];
+                    if (batteries[i].numbatteries != custombatteryset.numbatteries) continue;
+                    batteries.RemoveAt(i);
                     break;
                 }
             }
