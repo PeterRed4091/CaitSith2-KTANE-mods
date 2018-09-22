@@ -31,6 +31,6 @@ MonoBehaviour:
     of 60)\r\n[/list]\r\n\r\nCredits to TrainZack for the Encrypted Indicators code
     which is used here.\r\n\r\n[url=https://ktane.timwi.de/HTML/Multiple%20Widgets.html]HTML
     Manual[/url]\r\n[url=https://ktane.timwi.de/PDF/Multiple%20Widgets.pdf]PDF Manual[/url]\r"
-  version: 1.0.3
-  outputFolder: H:\SteamLibrary\SteamApps\common\Keep Talking and Nobody Explodes\mods
+  version: 1.0.3 ch 2.0
+  outputFolder: build
   previewImage: {fileID: 2800000, guid: 9d068ae4feb1cdc4894d8ad919c18a12, type: 3}
