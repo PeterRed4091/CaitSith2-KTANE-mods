@@ -9,6 +9,7 @@ public static class KMBombInfoExtensions
 
     public static string WidgetQueryTwofactor = "twofactor";
     public static string WidgetTwofactorKey = "twofactor_key";
+    public static string WidgetQueryCustomBatteries = "custombatteries";
 
     private class IndicatorJSON
     {
@@ -39,6 +40,12 @@ public static class KMBombInfoExtensions
         public int numbatteries = 0;
     }
 
+	private class CustomBatteryJSON
+	{
+		public int numbatteries = 0;
+		public string type = null;
+	}
+
     private class PortsJSON
     {
         public string[] presentPorts = null;
@@ -55,16 +62,9 @@ public static class KMBombInfoExtensions
 
     public enum KnownBatteryType
     {
-        Unknown = 0,
-        Empty = 0,
-        D = 1,
-
-        //D batteries currently always come as 1 battery in the one battery holder
-        AA = 2,
-        //AA batteries currently always comes in 2 batteries in the one battery holder
-        
-        AAx3 = 3,
-        AAx4 = 4
+        D,
+        AA,
+        NineVolt
     }
 
     public enum KnownPortType
@@ -135,6 +135,30 @@ public static class KMBombInfoExtensions
     private static IEnumerable<BatteryJSON> GetBatteryEntries(KMBombInfo bombInfo)
     {
         return GetJSONEntries<BatteryJSON>(bombInfo, KMBombInfo.QUERYKEY_GET_BATTERIES, null);
+    }
+
+    private static IEnumerable<CustomBatteryJSON> GetCustomBatteryEntries(KMBombInfo bombInfo)
+    {
+        return GetJSONEntries<CustomBatteryJSON>(bombInfo, WidgetQueryCustomBatteries, null);
+    }
+
+    private static IEnumerable<CustomBatteryJSON> GetSortedBatteryEntries(this KMBombInfo bombInfo)
+    {
+        var custombatteries = GetCustomBatteryEntries(bombInfo).OrderBy(x => x.numbatteries).ToList();
+        var batteries = GetBatteryEntries(bombInfo).OrderBy(x => x.numbatteries).ToList();
+        for (int i = 0; i < batteries.Count(); i++)
+        {
+            int j = batteries[i].numbatteries;
+            if (i >= custombatteries.Count())
+            {
+                custombatteries.Add(new CustomBatteryJSON {numbatteries = j, type = (j == 1 ? "D" : (j == 2 ? "AA": null))});
+            }
+            else if (j != custombatteries[i].numbatteries)
+            {
+                custombatteries.Insert(i, new CustomBatteryJSON {numbatteries = j, type = (j == 1 ? "D" : (j == 2 ? "AA": null))});
+            }
+        }
+        return custombatteries;
     }
 
     private static IEnumerable<PortsJSON> GetPortEntries(KMBombInfo bombInfo)
@@ -275,13 +299,12 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryCount(this KMBombInfo bombInfo, KnownBatteryType batteryType)
     {
-        return GetBatteryCount(bombInfo, (int) batteryType);
+        return bombInfo.GetBatteryCount(batteryType.ToString());
     }
 
-    public static int GetBatteryCount(this KMBombInfo bombInfo, int batteryType)
+    public static int GetBatteryCount(this KMBombInfo bombInfo, string batteryType)
     {
-        return GetBatteryEntries(bombInfo).Where((x) => x.numbatteries == batteryType)
-            .Sum((x) => x.numbatteries);
+        return GetSortedBatteryEntries(bombInfo).Where((x) => batteryType.Equals(x.type)).Sum((x) => x.numbatteries);
     }
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo)
@@ -291,12 +314,12 @@ public static class KMBombInfoExtensions
 
     public static int GetBatteryHolderCount(this KMBombInfo bombInfo, KnownBatteryType batteryType)
     {
-        return GetBatteryHolderCount(bombInfo, (int) batteryType);
+        return bombInfo.GetBatteryHolderCount(batteryType.ToString());
     }
 
-    public static int GetBatteryHolderCount(this KMBombInfo bombInfo, int batteryType)
+    public static int GetBatteryHolderCount(this KMBombInfo bombInfo, string batteryType)
     {
-        return GetBatteryEntries(bombInfo).Count(x => x.numbatteries == batteryType);
+        return GetSortedBatteryEntries(bombInfo).Count((x) => batteryType.Equals(x.type));
     }
 
     public static int GetPortCount(this KMBombInfo bombInfo)

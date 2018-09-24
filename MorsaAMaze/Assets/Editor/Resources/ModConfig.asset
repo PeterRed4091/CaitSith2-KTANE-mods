@@ -27,6 +27,6 @@ MonoBehaviour:
     - Green\n2 - Red\n3 - Random\n\nFinally, if you wish to reset everything back
     to default, you can simply change ResetToDefault from false to true.\n\r\n[url=https://ktane.timwi.de/HTML/Morse-A-Maze.html]HTML
     Manual[/url]\r\n[url=https://ktane.timwi.de/PDF/Morse-A-Maze.pdf]PDF Manual[/url]"
-  version: v1.0.8
-  outputFolder: H:\SteamLibrary\steamapps\common\Keep Talking and Nobody Explodes\mods
+  version: v1.0.8 ch 2.0
+  outputFolder: build
   previewImage: {fileID: 2800000, guid: cd4adcd895819624883d026cbad62568, type: 3}
